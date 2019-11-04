@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -22,6 +23,12 @@ type drbdConnection struct {
 	MyDiskStatus     string
 	RemoteDiskStatus string
 	Suspended        bool
+	KVs              []drbdConnectionKV
+}
+
+type drbdConnectionKV struct {
+	Name  string
+	Value float64
 }
 
 func getAllDRDBstatues() []drbdConnection {
@@ -37,6 +44,7 @@ func getAllDRDBstatues() []drbdConnection {
 		}
 
 		// /sys/kernel/debug/drbd/resources/$Resource/connections/$RemoteHost/$ResourceID/proc_drbd
+		//
 		// []string{"", "sys", "kernel", "debug", "drbd", "resources", "$Resource", "connections", "$RemoteHost", "$ResourceID", "proc_drbd"}
 		pathSegments := strings.Split(path, string(os.PathSeparator))
 
@@ -88,6 +96,7 @@ var errInvalidOutput = fmt.Errorf("Failed to parse proc_drbd data")
 */
 
 var bannerRegexp = regexp.MustCompilePOSIX(` [0-9]: cs:([a-zA-Z]+) ro:([^/]+)/([^/]+) ds:([^/]+)/([^/]+) [a-zA-Z] ([\-rs])`)
+var kvExtractionRegexp = regexp.MustCompilePOSIX(`(([a-z]+):([0-9]+))+`)
 
 func parseProcDRBD(input []byte, dC *drbdConnection) error {
 
@@ -108,5 +117,26 @@ func parseProcDRBD(input []byte, dC *drbdConnection) error {
 		dC.Suspended = true
 	}
 
+	kvMatches := kvExtractionRegexp.FindAllStringSubmatch(string(input), -1)
+
+	kvs := make([]drbdConnectionKV, 0)
+	for _, blob := range kvMatches {
+		// blob will look something like:
+		// 	[]string{"nr:119598720", "nr:119598720", "nr", "119598720"},
+		i, err := strconv.ParseFloat(blob[3], 64)
+		if err != nil {
+			log.Printf("failed to parse KV number! %#v", blob)
+			continue
+		}
+
+		kv := drbdConnectionKV{
+			Name:  blob[2],
+			Value: i,
+		}
+
+		kvs = append(kvs, kv)
+	}
+
+	dC.KVs = kvs
 	return nil
 }

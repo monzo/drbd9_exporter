@@ -59,6 +59,19 @@ func TestDrbdParse2(t *testing.T) {
 	if output.RemoteRole != "Secondary" {
 		t.Fatalf("mis-parsed testCase2 Expected 'Secondary' got %s", output.RemoteRole)
 	}
+
+	foundAl := false
+	for _, v := range output.KVs {
+		if v.Name == "al" {
+			foundAl = true
+			if v.Value != 1950 {
+				t.Fatalf("Did not parse value correctly from KVs %#v", v)
+			}
+		}
+	}
+	if !foundAl {
+		t.Fatalf("Expected AL kv to have been parsed, didnt exist: %#v", output.KVs)
+	}
 }
 
 func TestDrbdParse3(t *testing.T) {
