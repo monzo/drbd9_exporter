@@ -5,6 +5,12 @@ of that node's DRBD volumes.
 
 ## Installation
 
+To build the deb file:
+
+```
+debuild -b -uc -us
+```
+
 To build the binary:
 
 ```bash

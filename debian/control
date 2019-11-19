@@ -1,0 +1,20 @@
+Source: drbd9-exporter
+Maintainer: Ben Cartwright-Cox <bencartwrightcox@monzo.com>
+Uploaders: Ben Cartwright-Cox <bencartwrightcox@monzo.com>,
+Section: net
+Testsuite: autopkgtest-pkg-go
+Priority: optional
+Build-Depends: debhelper-compat (= 9),
+               dh-golang,
+Standards-Version: 4.4.1
+XS-Go-Import-Path: github.com/monzo/drbd9_exporter
+
+Package: drbd9-exporter
+Architecture: any
+Pre-Depends: ${misc:Pre-Depends}
+Depends: adduser,
+         daemon | systemd-sysv,
+         ${misc:Depends},
+         ${shlibs:Depends},
+Built-Using: ${misc:Built-Using},
+Description: Exports DRBD 9.0 metrics in prometheus format 

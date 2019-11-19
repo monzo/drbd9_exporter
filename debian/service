@@ -1,0 +1,13 @@
+[Unit]
+Description=Disk Replication prom exporter
+
+[Service]
+Restart=always
+User=root
+ExecStart=/usr/bin/drbd9_exporter
+ExecReload=/bin/kill -HUP $MAINPID
+TimeoutStopSec=20s
+LimitNOFILE=8192
+
+[Install]
+WantedBy=multi-user.target
