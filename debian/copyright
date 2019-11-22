@@ -8,4 +8,4 @@ Comment: Upstream embeds many dependencies into the source tree. Everything
 
 Files: *
 Copyright: 2019-2019 Monzo Bank Ltd
-License: Apache-2.0
+License: MIT
