@@ -1,0 +1,8 @@
+#!/bin/bash
+
+docker build \
+    --build-arg APP_VERSION=$DOCKER_TAG \
+    --build-arg GIT_BRANCH=$(git symbolic-ref -q --short HEAD) \
+    --build-arg GIT_EMAIL=$(git config --get user.email) \
+    --build-arg GIT_REVISION=$(git rev-parse --short HEAD) \
+    -t $IMAGE_NAME .
