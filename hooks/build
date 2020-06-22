@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo docker build \
+docker build \
     --build-arg APP_VERSION=${DOCKER_TAG%%,*} \
     --build-arg GIT_BRANCH=$(git symbolic-ref -q --short HEAD) \
     --build-arg GIT_EMAIL=$(git config --get user.email) \
