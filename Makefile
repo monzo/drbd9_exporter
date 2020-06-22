@@ -10,6 +10,17 @@ GO            = GOPATH=$(CURDIR)/.gopath GOBIN=$(CURDIR)/build go
 GO_BUILDFLAGS =
 GO_LDFLAGS    = -s -w
 
+APP_VERSION ?= v0.0.0-dev
+GIT_REVISION ?= $(shell git rev-parse --short HEAD)
+GIT_BRANCH ?= $(shell git symbolic-ref -q --short HEAD)
+GIT_EMAIL ?= $(shell git config --get user.email)
+
+GO_LDFLAGS += -X 'github.com/prometheus/common/version.Version=$(APP_VERSION)'
+GO_LDFLAGS += -X 'github.com/prometheus/common/version.Revision=$(GIT_REVISION)'
+GO_LDFLAGS += -X 'github.com/prometheus/common/version.Branch=$(GIT_BRANCH)'
+GO_LDFLAGS += -X 'github.com/prometheus/common/version.BuildUser=$(GIT_EMAIL)'
+GO_LDFLAGS += -X 'github.com/prometheus/common/version.BuildDate=$(shell date -u "+%Y-%m-%dT%H:%M:%S%z")'
+
 build/drbd9_exporter: *.go
 	$(GO) install $(GO_BUILDFLAGS) -ldflags "$(GO_LDFLAGS)" .
 
