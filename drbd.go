@@ -34,7 +34,7 @@ type drbdConnectionKV struct {
 func getAllDRDBstatues() []drbdConnection {
 	connections := make([]drbdConnection, 0)
 
-	filepath.Walk("/sys/kernel/debug/drbd/resources/", func(path string, info os.FileInfo, err error) error {
+	filepath.Walk(fmt.Sprintf(`%ssys/kernel/debug/drbd/resources/`, *hostSysPath), func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
