@@ -47,11 +47,12 @@ func getAllDRDBstatues() []drbdConnection {
 		//
 		// []string{"", "sys", "kernel", "debug", "drbd", "resources", "$Resource", "connections", "$RemoteHost", "$ResourceID", "proc_drbd"}
 		pathSegments := strings.Split(path, string(os.PathSeparator))
+		hostSysPathLen := len(strings.Split(*hostSysPath, string(os.PathSeparator)))
 
 		dC := drbdConnection{
-			Resource:   pathSegments[6],
-			RemoteHost: pathSegments[8],
-			ResourceID: pathSegments[9],
+			Resource:   pathSegments[4+hostSysPathLen],
+			RemoteHost: pathSegments[6+hostSysPathLen],
+			ResourceID: pathSegments[7+hostSysPathLen],
 		}
 
 		procDrbd, err := ioutil.ReadFile(path)
