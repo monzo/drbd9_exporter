@@ -34,7 +34,8 @@ type drbdConnectionKV struct {
 func getAllDRDBstatues() []drbdConnection {
 	connections := make([]drbdConnection, 0)
 
-	filepath.Walk(fmt.Sprintf(`%ssys/kernel/debug/drbd/resources/`, *hostSysPath), func(path string, info os.FileInfo, err error) error {
+	_hostSysPath := strings.TrimRight(*hostSysPath, "/")
+	filepath.Walk(fmt.Sprintf(`%s/sys/kernel/debug/drbd/resources/`, _hostSysPath), func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -47,12 +48,12 @@ func getAllDRDBstatues() []drbdConnection {
 		//
 		// []string{"", "sys", "kernel", "debug", "drbd", "resources", "$Resource", "connections", "$RemoteHost", "$ResourceID", "proc_drbd"}
 		pathSegments := strings.Split(path, string(os.PathSeparator))
-		hostSysPathLen := len(strings.Split(*hostSysPath, string(os.PathSeparator)))
+		hostSysPathLen := len(strings.Split(_hostSysPath, string(os.PathSeparator)))
 
 		dC := drbdConnection{
-			Resource:   pathSegments[4+hostSysPathLen],
-			RemoteHost: pathSegments[6+hostSysPathLen],
-			ResourceID: pathSegments[7+hostSysPathLen],
+			Resource:   pathSegments[5+hostSysPathLen],
+			RemoteHost: pathSegments[7+hostSysPathLen],
+			ResourceID: pathSegments[8+hostSysPathLen],
 		}
 
 		procDrbd, err := ioutil.ReadFile(path)
