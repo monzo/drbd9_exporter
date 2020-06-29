@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  drbd9-exporter:
+    build:
+      context: .
+    restart: always
+    ports:
+      - 9481:9481
+    volumes:
+      - /sys:/host/sys:ro
+    command:
+      - -host.sys-path=/host
