@@ -97,7 +97,7 @@ var errInvalidOutput = fmt.Errorf("Failed to parse proc_drbd data")
     blocked on activity log: 0/0/0
 */
 
-var bannerRegexp = regexp.MustCompilePOSIX(` [0-9]: cs:([a-zA-Z]+) ro:([^/]+)/([^/]+) ds:([^/]+)/([^/]+) [a-zA-Z] ([\-rs])`)
+var bannerRegexp = regexp.MustCompilePOSIX(` ?[0-9]+: cs:([a-zA-Z]+) ro:([^/]+)/([^/]+) ds:([^/]+)/([^/]+) [a-zA-Z] ([\-rs])`)
 var kvExtractionRegexp = regexp.MustCompilePOSIX(`(([a-z]+):([0-9]+))+`)
 
 func parseProcDRBD(input []byte, dC *drbdConnection) error {
