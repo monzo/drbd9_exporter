@@ -34,7 +34,8 @@ type drbdConnectionKV struct {
 func getAllDRDBstatues() []drbdConnection {
 	connections := make([]drbdConnection, 0)
 
-	filepath.Walk("/sys/kernel/debug/drbd/resources/", func(path string, info os.FileInfo, err error) error {
+	_hostSysPath := strings.TrimRight(*hostSysPath, "/")
+	filepath.Walk(fmt.Sprintf(`%s/sys/kernel/debug/drbd/resources/`, _hostSysPath), func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -47,11 +48,12 @@ func getAllDRDBstatues() []drbdConnection {
 		//
 		// []string{"", "sys", "kernel", "debug", "drbd", "resources", "$Resource", "connections", "$RemoteHost", "$ResourceID", "proc_drbd"}
 		pathSegments := strings.Split(path, string(os.PathSeparator))
+		hostSysPathLen := len(strings.Split(_hostSysPath, string(os.PathSeparator)))
 
 		dC := drbdConnection{
-			Resource:   pathSegments[6],
-			RemoteHost: pathSegments[8],
-			ResourceID: pathSegments[9],
+			Resource:   pathSegments[5+hostSysPathLen],
+			RemoteHost: pathSegments[7+hostSysPathLen],
+			ResourceID: pathSegments[8+hostSysPathLen],
 		}
 
 		procDrbd, err := ioutil.ReadFile(path)
@@ -95,7 +97,7 @@ var errInvalidOutput = fmt.Errorf("Failed to parse proc_drbd data")
     blocked on activity log: 0/0/0
 */
 
-var bannerRegexp = regexp.MustCompilePOSIX(` [0-9]: cs:([a-zA-Z]+) ro:([^/]+)/([^/]+) ds:([^/]+)/([^/]+) [a-zA-Z] ([\-rs])`)
+var bannerRegexp = regexp.MustCompilePOSIX(` ?[0-9]+: cs:([a-zA-Z]+) ro:([^/]+)/([^/]+) ds:([^/]+)/([^/]+) [a-zA-Z] ([\-rs])`)
 var kvExtractionRegexp = regexp.MustCompilePOSIX(`(([a-z]+):([0-9]+))+`)
 
 func parseProcDRBD(input []byte, dC *drbdConnection) error {
